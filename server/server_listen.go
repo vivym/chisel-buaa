@@ -10,11 +10,11 @@ import (
 	"os/user"
 	"path/filepath"
 
-	"github.com/jpillora/chisel/share/settings"
+	"github.com/vivym/chisel-buaa/share/settings"
 	"golang.org/x/crypto/acme/autocert"
 )
 
-//TLSConfig enables configures TLS
+// TLSConfig enables configures TLS
 type TLSConfig struct {
 	Key     string
 	Cert    string

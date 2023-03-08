@@ -17,19 +17,19 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	chshare "github.com/jpillora/chisel/share"
-	"github.com/jpillora/chisel/share/ccrypto"
-	"github.com/jpillora/chisel/share/cio"
-	"github.com/jpillora/chisel/share/cnet"
-	"github.com/jpillora/chisel/share/settings"
-	"github.com/jpillora/chisel/share/tunnel"
+	chshare "github.com/vivym/chisel-buaa/share"
+	"github.com/vivym/chisel-buaa/share/ccrypto"
+	"github.com/vivym/chisel-buaa/share/cio"
+	"github.com/vivym/chisel-buaa/share/cnet"
+	"github.com/vivym/chisel-buaa/share/settings"
+	"github.com/vivym/chisel-buaa/share/tunnel"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/proxy"
 	"golang.org/x/sync/errgroup"
 )
 
-//Config represents a client configuration
+// Config represents a client configuration
 type Config struct {
 	Fingerprint      string
 	Auth             string
@@ -45,7 +45,7 @@ type Config struct {
 	Verbose          bool
 }
 
-//TLSConfig for a Client
+// TLSConfig for a Client
 type TLSConfig struct {
 	SkipVerify bool
 	CA         string
@@ -54,7 +54,7 @@ type TLSConfig struct {
 	ServerName string
 }
 
-//Client represents a client instance
+// Client represents a client instance
 type Client struct {
 	*cio.Logger
 	config    *Config
@@ -69,7 +69,7 @@ type Client struct {
 	tunnel    *tunnel.Tunnel
 }
 
-//NewClient creates a new client instance
+// NewClient creates a new client instance
 func NewClient(c *Config) (*Client, error) {
 	//apply default scheme
 	if !strings.HasPrefix(c.Server, "http") {
@@ -84,6 +84,7 @@ func NewClient(c *Config) (*Client, error) {
 	}
 	//swap to websockets scheme
 	u.Scheme = strings.Replace(u.Scheme, "http", "ws", 1)
+	u.Path = strings.Replace(u.Path, "http-", "ws-", 1)
 	//apply default port
 	if !regexp.MustCompile(`:\d+$`).MatchString(u.Host) {
 		if u.Scheme == "wss" {
@@ -190,7 +191,7 @@ func NewClient(c *Config) (*Client, error) {
 	return client, nil
 }
 
-//Run starts client and blocks while connected
+// Run starts client and blocks while connected
 func (c *Client) Run() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -221,7 +222,7 @@ func (c *Client) verifyServer(hostname string, remote net.Addr, key ssh.PublicKe
 	return nil
 }
 
-//verifyLegacyFingerprint calculates and compares legacy MD5 fingerprints
+// verifyLegacyFingerprint calculates and compares legacy MD5 fingerprints
 func (c *Client) verifyLegacyFingerprint(key ssh.PublicKey) error {
 	bytes := md5.Sum(key.Marshal())
 	strbytes := make([]string, len(bytes))
@@ -236,7 +237,7 @@ func (c *Client) verifyLegacyFingerprint(key ssh.PublicKey) error {
 	return nil
 }
 
-//Start client and does not block
+// Start client and does not block
 func (c *Client) Start(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	c.stop = cancel
@@ -293,12 +294,12 @@ func (c *Client) setProxy(u *url.URL, d *websocket.Dialer) error {
 	return nil
 }
 
-//Wait blocks while the client is running.
+// Wait blocks while the client is running.
 func (c *Client) Wait() error {
 	return c.eg.Wait()
 }
 
-//Close manually stops the client
+// Close manually stops the client
 func (c *Client) Close() error {
 	if c.stop != nil {
 		c.stop()

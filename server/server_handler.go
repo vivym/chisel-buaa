@@ -6,10 +6,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	chshare "github.com/jpillora/chisel/share"
-	"github.com/jpillora/chisel/share/cnet"
-	"github.com/jpillora/chisel/share/settings"
-	"github.com/jpillora/chisel/share/tunnel"
+	chshare "github.com/vivym/chisel-buaa/share"
+	"github.com/vivym/chisel-buaa/share/cnet"
+	"github.com/vivym/chisel-buaa/share/settings"
+	"github.com/vivym/chisel-buaa/share/tunnel"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
 )
@@ -19,7 +19,7 @@ func (s *Server) handleClientHandler(w http.ResponseWriter, r *http.Request) {
 	//websockets upgrade AND has chisel prefix
 	upgrade := strings.ToLower(r.Header.Get("Upgrade"))
 	protocol := r.Header.Get("Sec-WebSocket-Protocol")
-	if upgrade == "websocket"  {
+	if upgrade == "websocket" {
 		if protocol == chshare.ProtocolVersion {
 			s.handleWebsocket(w, r)
 			return
@@ -56,6 +56,8 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 		l.Debugf("Failed to upgrade (%s)", err)
 		return
 	}
+	// Hack to allow for a small delay between the websocket upgrade and the SSH handshake.
+	time.Sleep(10 * time.Microsecond)
 	conn := cnet.NewWebSocketConn(wsConn)
 	// perform SSH handshake on net.Conn
 	l.Debugf("Handshaking with %s...", req.RemoteAddr)

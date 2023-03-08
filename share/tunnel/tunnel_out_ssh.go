@@ -6,10 +6,10 @@ import (
 	"net"
 	"strings"
 
-	"github.com/jpillora/chisel/share/cio"
-	"github.com/jpillora/chisel/share/cnet"
-	"github.com/jpillora/chisel/share/settings"
 	"github.com/jpillora/sizestr"
+	"github.com/vivym/chisel-buaa/share/cio"
+	"github.com/vivym/chisel-buaa/share/cnet"
+	"github.com/vivym/chisel-buaa/share/settings"
 	"golang.org/x/crypto/ssh"
 )
 

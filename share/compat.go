@@ -3,12 +3,12 @@ package chshare
 //this file exists to maintain backwards compatibility
 
 import (
-	"github.com/jpillora/chisel/share/ccrypto"
-	"github.com/jpillora/chisel/share/cio"
-	"github.com/jpillora/chisel/share/cnet"
-	"github.com/jpillora/chisel/share/cos"
-	"github.com/jpillora/chisel/share/settings"
-	"github.com/jpillora/chisel/share/tunnel"
+	"github.com/vivym/chisel-buaa/share/ccrypto"
+	"github.com/vivym/chisel-buaa/share/cio"
+	"github.com/vivym/chisel-buaa/share/cnet"
+	"github.com/vivym/chisel-buaa/share/cos"
+	"github.com/vivym/chisel-buaa/share/settings"
+	"github.com/vivym/chisel-buaa/share/tunnel"
 )
 
 const (
@@ -50,7 +50,7 @@ var (
 	NewTCPProxy      = tunnel.NewProxy
 )
 
-//EncodeConfig old version
+// EncodeConfig old version
 func EncodeConfig(c *settings.Config) ([]byte, error) {
 	return settings.EncodeConfig(*c), nil
 }

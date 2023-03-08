@@ -60,13 +60,13 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
-          username: jpillora
+          username: vivym
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker meta
         id: docker_meta
         uses: docker/metadata-action@v4
         with:
-          images: jpillora/chisel
+          images: vivym/chisel-buaa
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}

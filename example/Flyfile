@@ -1,2 +1,2 @@
-FROM jpillora/chisel
+FROM vivym/chisel-buaa
 ENTRYPOINT ["/app/bin", "server", "--port", "443", "--tls-domain", "chisel.jpillora.com"]

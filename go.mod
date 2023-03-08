@@ -1,4 +1,4 @@
-module github.com/jpillora/chisel
+module github.com/vivym/chisel-buaa
 
 go 1.13
 
