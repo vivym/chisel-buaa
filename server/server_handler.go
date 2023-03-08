@@ -2,6 +2,7 @@ package chserver
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -19,9 +20,24 @@ func (s *Server) handleClientHandler(w http.ResponseWriter, r *http.Request) {
 	//websockets upgrade AND has chisel prefix
 	upgrade := strings.ToLower(r.Header.Get("Upgrade"))
 	protocol := r.Header.Get("Sec-WebSocket-Protocol")
+	delayStr := r.URL.Query().Get("delay")
+	if delayStr == "" {
+		delayStr = "100"
+	}
+	delay, err := strconv.Atoi(delayStr)
+	if delay > 10000 {
+		delay = 10000
+	}
+
+	if err != nil {
+		w.WriteHeader(403)
+		w.Write([]byte("Invalid `delay`"))
+		return
+	}
+
 	if upgrade == "websocket" {
 		if protocol == chshare.ProtocolVersion {
-			s.handleWebsocket(w, r)
+			s.handleWebsocket(w, r, delay)
 			return
 		}
 		//print into server logs and silently fall-through
@@ -48,7 +64,7 @@ func (s *Server) handleClientHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleWebsocket is responsible for handling the websocket connection
-func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
+func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request, delay int) {
 	id := atomic.AddInt32(&s.sessCount, 1)
 	l := s.Fork("session#%d", id)
 	wsConn, err := upgrader.Upgrade(w, req, nil)
@@ -57,7 +73,7 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// Hack to allow for a small delay between the websocket upgrade and the SSH handshake.
-	time.Sleep(10 * time.Microsecond)
+	time.Sleep(time.Duration(delay) * time.Millisecond)
 	conn := cnet.NewWebSocketConn(wsConn)
 	// perform SSH handshake on net.Conn
 	l.Debugf("Handshaking with %s...", req.RemoteAddr)
