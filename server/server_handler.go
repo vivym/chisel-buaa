@@ -22,9 +22,15 @@ func (s *Server) handleClientHandler(w http.ResponseWriter, r *http.Request) {
 	protocol := r.Header.Get("Sec-WebSocket-Protocol")
 	delayStr := r.URL.Query().Get("delay")
 	if delayStr == "" {
-		delayStr = "100"
+		delayStr = "0"
 	}
 	delay, err := strconv.Atoi(delayStr)
+	if err != nil {
+		w.WriteHeader(403)
+		w.Write([]byte("Invalid `delay`"))
+		return
+	}
+
 	if delay > 10000 {
 		delay = 10000
 	}
@@ -73,7 +79,9 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, req *http.Request, delay
 		return
 	}
 	// Hack to allow for a small delay between the websocket upgrade and the SSH handshake.
-	time.Sleep(time.Duration(delay) * time.Millisecond)
+	if delay > 0 {
+		time.Sleep(time.Duration(delay) * time.Millisecond)
+	}
 	conn := cnet.NewWebSocketConn(wsConn)
 	// perform SSH handshake on net.Conn
 	l.Debugf("Handshaking with %s...", req.RemoteAddr)
