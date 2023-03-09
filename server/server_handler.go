@@ -35,12 +35,6 @@ func (s *Server) handleClientHandler(w http.ResponseWriter, r *http.Request) {
 		delay = 10000
 	}
 
-	if err != nil {
-		w.WriteHeader(403)
-		w.Write([]byte("Invalid `delay`"))
-		return
-	}
-
 	if upgrade == "websocket" {
 		if protocol == chshare.ProtocolVersion {
 			s.handleWebsocket(w, r, delay)
